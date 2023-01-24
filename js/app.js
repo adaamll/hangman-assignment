@@ -1,5 +1,5 @@
 /** TODO
- * Display guesses
+ *
  *
  *
  *  */
@@ -48,17 +48,22 @@ function checkGuess(guess) {
   if (chosenWord.includes(guess) && alphabet.includes(guess)) {
     for (let i = 0; i < chosenWord.length; i++) {
       if (chosenWord[i] === guess) {
+        infoContainer.innerHTML = 'Great guess!';
         correctLetters.push(guess);
         document.getElementById(`letter${i}`).textContent = guess;
-        document.getElementById(`letter${i}`).style.backgroundColor = '#D5FFAD';
+        document.getElementById(`letter${i}`).style.backgroundColor = '#66b07a';
         combineLetters();
       }
     }
   } else if (!chosenWord.includes(guess) && alphabet.includes(guess)) {
     if (!wrongLetters.includes(guess)) {
+      infoContainer.innerHTML = 'Wrong guess!';
       wrongLetters.push(guess);
       wrongWordContainer.innerHTML = `<li>${wrongLetters.join(' ')}</li>`;
       wrongGuesses--;
+      document.getElementById(
+        'guesses'
+      ).innerHTML = `Tries: ${wrongGuesses} left of 5`;
       renderSVG();
       endGame();
     }
