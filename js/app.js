@@ -1,6 +1,7 @@
 // GLOBAL VARIABLES
 
 const correctWordContainer = document.getElementById('word');
+const wrongWordContainer = document.getElementById('no-match');
 
 let userScore = 0;
 let correctLetters = [];
@@ -42,7 +43,55 @@ function checkGuess(guess) {
       if (chosenWord[i] === guess) {
         correctLetters.push(guess);
         document.getElementById(`letter${i}`).textContent = guess;
+        combineLetters();
       }
+    }
+  } else if (!chosenWord.includes(guess)) {
+    if (!wrongLetters.includes(guess)) {
+      wrongLetters.push(guess);
+      wrongWordContainer.innerHTML = `<li>${wrongLetters.join(' ')}</li>`;
+      wrongGuesses--;
+      renderSVG();
+      endGame();
     }
   }
 }
+
+// FUNCTION TO COMBINE LETTERS
+function combineLetters() {
+  let listItems = correctWordContainer.getElementsByTagName('li');
+  let comparedWord = '';
+  for (let i = 0; i < listItems.length; i++) {
+    comparedWord += listItems[i].innerHTML;
+  }
+  compareWords(comparedWord);
+}
+
+// FUNCTION TO COMPARE WORDS
+function compareWords(word) {
+  if (word === chosenWord) {
+    document.getElementById('info').innerHTML = 'You win!';
+    userScore++;
+  }
+}
+
+// FUNCTION TO RENDER SVG
+let bodyParts = ['scaffold', 'head', 'body', 'arms', 'legs'];
+function renderSVG() {
+  document.querySelector('figure').classList.add(bodyParts[0]);
+  bodyParts.shift();
+  console.log(bodyParts);
+}
+
+// FUNCTION END GAME
+function endGame() {
+  if (wrongGuesses === 0) {
+    document.querySelector('b').textContent = `${chosenWord}`;
+    document.querySelector('.game-over').classList.add('show');
+  }
+}
+
+// EVENTLISTENER RESTART BUTTON
+document.querySelector('a').addEventListener('click', () => {
+  location.reload();
+});
