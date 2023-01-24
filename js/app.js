@@ -31,4 +31,18 @@ generateUnderscores(chosenWord);
 // EVENTLISTENER ON KEYPRESS
 document.addEventListener('keypress', (event) => {
   let pressedKey = String.fromCharCode(event.keyCode);
+  checkGuess(pressedKey);
 });
+
+// FUNCTION TO CHECK IF GUESS IS CORRECT
+
+function checkGuess(guess) {
+  if (chosenWord.includes(guess)) {
+    for (let i = 0; i < chosenWord.length; i++) {
+      if (chosenWord[i] === guess) {
+        correctLetters.push(guess);
+        document.getElementById(`letter${i}`).textContent = guess;
+      }
+    }
+  }
+}
