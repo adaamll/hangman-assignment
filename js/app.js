@@ -1,3 +1,9 @@
+/** TODO
+ * Display guesses
+ * Only use A-Z
+ * Highlight word when correct guess
+ *  */
+
 // GLOBAL VARIABLES
 
 const correctWordContainer = document.getElementById('word');
@@ -11,7 +17,7 @@ let totalGuesses = 0;
 let wrongGuesses = 5;
 let chosenWord = '';
 
-const words = ['monkey', 'banana', 'tree', 'jungle', 'snek'];
+const words = ['monkey', 'banana', 'tree', 'jungle', 'snake'];
 
 // FUNCTION TO GENERATE RANDOM WORD
 function generateRandomWord() {
