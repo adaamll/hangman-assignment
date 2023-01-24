@@ -1,11 +1,11 @@
 /** TODO
  * Display guesses
- * Only use A-Z
- * Highlight word when correct guess
+ *
+ *
  *  */
 
 // GLOBAL VARIABLES
-
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 const correctWordContainer = document.getElementById('word');
 const wrongWordContainer = document.getElementById('no-match');
 const infoContainer = document.getElementById('info');
@@ -45,15 +45,16 @@ document.addEventListener('keypress', (event) => {
 // FUNCTION TO CHECK IF GUESS IS CORRECT
 
 function checkGuess(guess) {
-  if (chosenWord.includes(guess)) {
+  if (chosenWord.includes(guess) && alphabet.includes(guess)) {
     for (let i = 0; i < chosenWord.length; i++) {
       if (chosenWord[i] === guess) {
         correctLetters.push(guess);
         document.getElementById(`letter${i}`).textContent = guess;
+        document.getElementById(`letter${i}`).style.backgroundColor = '#D5FFAD';
         combineLetters();
       }
     }
-  } else if (!chosenWord.includes(guess)) {
+  } else if (!chosenWord.includes(guess) && alphabet.includes(guess)) {
     if (!wrongLetters.includes(guess)) {
       wrongLetters.push(guess);
       wrongWordContainer.innerHTML = `<li>${wrongLetters.join(' ')}</li>`;
@@ -79,7 +80,9 @@ function compareWords(word) {
   if (word === chosenWord) {
     infoContainer.innerHTML = 'You win!';
     userScore++;
+
     document.getElementById('score').innerHTML = `Your score is: ${userScore}`;
+
     newGame();
   }
 }
