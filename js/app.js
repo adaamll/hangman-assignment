@@ -2,6 +2,7 @@
 
 const correctWordContainer = document.getElementById('word');
 const wrongWordContainer = document.getElementById('no-match');
+const infoContainer = document.getElementById('info');
 
 let userScore = 0;
 let correctLetters = [];
@@ -70,8 +71,10 @@ function combineLetters() {
 // FUNCTION TO COMPARE WORDS
 function compareWords(word) {
   if (word === chosenWord) {
-    document.getElementById('info').innerHTML = 'You win!';
+    infoContainer.innerHTML = 'You win!';
     userScore++;
+    document.getElementById('score').innerHTML = `Your score is: ${userScore}`;
+    newGame();
   }
 }
 
@@ -95,3 +98,22 @@ function endGame() {
 document.querySelector('a').addEventListener('click', () => {
   location.reload();
 });
+
+// FUNCTION TO RENDER NEW GAME
+function newGame() {
+  infoContainer.innerHTML = 'Next round!';
+
+  setTimeout(() => {
+    wrongGuesses = 5;
+    correctLetters = [];
+    wrongLetters = [];
+    generateRandomWord();
+    generateUnderscores(chosenWord);
+    bodyParts = ['scaffold', 'head', 'body', 'arms', 'legs'];
+    document
+      .querySelector('figure')
+      .classList.remove('scaffold', 'head', 'body', 'arms', 'legs');
+    wrongWordContainer.textContent = '';
+    infoContainer.innerHTML = 'Take a guess!';
+  }, 2000);
+}
