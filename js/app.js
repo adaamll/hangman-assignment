@@ -98,7 +98,7 @@ function combineLetters() {
 // FUNCTION TO COMPARE GUESSED WORD WITH CORRECT WORD
 function compareWords(word) {
   if (word === chosenWord) {
-    isWaiting = true; // FLIP BOOLEAN SO THAT YOU CANT TYPE UNTIL NEW WORD RENDERS
+    isWaiting = true; // FLIP BOOLEAN SO THAT YOU CAN'T TYPE UNTIL NEW WORD RENDERS
     userScore += 10;
     document.getElementById('score').textContent = `${userScore}`;
     newGame();
