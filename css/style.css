@@ -5,7 +5,7 @@ body {
   justify-content: center;
   align-items: center;
   font-family: 'PT Sans', sans-serif;
-  background: #eee;
+  background: rgb(231, 250, 255);
 }
 
 main {

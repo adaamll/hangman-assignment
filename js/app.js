@@ -1,8 +1,10 @@
 // GLOBAL VARIABLES
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-const correctWordContainer = document.getElementById('word');
-const wrongWordContainer = document.getElementById('no-match');
-const infoContainer = document.getElementById('info');
+const correctWordContainer = document.querySelector('.word');
+const wrongWordContainer = document.querySelector('.nomatch');
+const infoContainer = document.querySelector('.info');
+
+let isWaiting = false; // BOOLEAN TO DISABLE KEYPRESS WHILE WAITING FOR NEW WORD
 
 let userScore = 0;
 let correctLetters = [];
@@ -16,6 +18,7 @@ const words = ['monkey', 'banana', 'tree', 'jungle', 'snake'];
 function generateRandomWord() {
   chosenWord = words[Math.floor(Math.random() * words.length)];
   console.log(chosenWord);
+  generateUnderscores(chosenWord);
 }
 generateRandomWord();
 
@@ -27,45 +30,64 @@ function generateUnderscores(word) {
     correctWordContainer.innerHTML += `<li id="letter${i}"></li>`;
   }
 }
-generateUnderscores(chosenWord);
 
 // EVENTLISTENER ON KEYPRESS TO SEE WHICH KEY IS PRESSED
 document.addEventListener('keypress', (event) => {
-  let pressedKey = String.fromCharCode(event.keyCode);
-  checkGuess(pressedKey);
+  if (!isWaiting) {
+    let pressedKey = event.key;
+    checkGuess(pressedKey);
+  }
 });
 
 // FUNCTION TO CHECK IF GUESS IS CORRECT OR NOT
 function checkGuess(guess) {
-  if (chosenWord.includes(guess) && alphabet.includes(guess)) {
-    for (let i = 0; i < chosenWord.length; i++) {
-      const indexOfLetter = document.getElementById(`letter${i}`);
-      if (chosenWord[i] === guess) {
-        infoContainer.innerHTML = 'Great guess!';
-        correctLetters.push(guess);
-        indexOfLetter.textContent = guess;
-        indexOfLetter.style.backgroundColor = '#66b07a';
-        combineLetters();
-      }
+  if (isCorrectGuess(guess) && isValidGuess(guess)) {
+    updateCorrectGuess(guess);
+  } else if (!isCorrectGuess(guess) && isValidGuess(guess)) {
+    updateWrongGuess(guess);
+  }
+}
+
+// FUNCTION TO CHECK IF GUESS IS A CORRECT GUESS
+function isCorrectGuess(guess) {
+  return chosenWord.includes(guess);
+}
+
+// FUNCTION TO CHECK IF GUESS IS A VALID GUESS
+function isValidGuess(guess) {
+  return alphabet.includes(guess);
+}
+
+// FUNCTION TO UPDATE UI FOR CORRECT GUESS
+function updateCorrectGuess(guess) {
+  for (let i = 0; i < chosenWord.length; i++) {
+    const letterEl = document.getElementById(`letter${i}`);
+    if (chosenWord[i] === guess) {
+      correctLetters.push(guess);
+      letterEl.textContent = guess;
+      infoContainer.textContent = 'Great guess!';
+      letterEl.setAttribute('style', 'background-color: #66b07a;');
+      combineLetters();
     }
-  } else if (!chosenWord.includes(guess) && alphabet.includes(guess)) {
-    if (!wrongLetters.includes(guess)) {
-      infoContainer.innerHTML = 'Wrong guess!';
-      wrongLetters.push(guess);
-      wrongWordContainer.innerHTML = `<li>${wrongLetters.join(' ')}</li>`;
-      wrongGuesses--;
-      document.getElementById(
-        'guesses'
-      ).innerHTML = `Tries: ${wrongGuesses} left of 5`;
-      renderSVG();
-      endGame();
-    }
+  }
+}
+
+// FUNCTION TO UPDATE UI FOR WRONG GUESS
+function updateWrongGuess(guess) {
+  if (!wrongLetters.includes(guess)) {
+    wrongLetters.push(guess);
+    wrongGuesses--;
+    infoContainer.textContent = 'Wrong guess!';
+    wrongWordContainer.innerHTML = `<li>${wrongLetters.join(' ')}</li>`;
+    document.getElementById('guesses').textContent = `${wrongGuesses}`;
+    renderSVG();
+    endGame();
   }
 }
 
 // FUNCTION TO COMBINE LETTERS FROM LI TO COMPARE TO CORRECT WORD
 function combineLetters() {
-  let listItems = correctWordContainer.getElementsByTagName('li');
+  let listItems = document.querySelectorAll('.word li');
   let comparedWord = '';
   for (let i = 0; i < listItems.length; i++) {
     comparedWord += listItems[i].innerHTML;
@@ -76,19 +98,19 @@ function combineLetters() {
 // FUNCTION TO COMPARE GUESSED WORD WITH CORRECT WORD
 function compareWords(word) {
   if (word === chosenWord) {
-    infoContainer.innerHTML = 'You win!';
-    userScore++;
-    document.getElementById('score').innerHTML = `Your score is: ${userScore}`;
+    isWaiting = true; // FLIP BOOLEAN SO THAT YOU CANT TYPE UNTIL NEW WORD RENDERS
+    userScore += 10;
+    document.getElementById('score').textContent = `${userScore}`;
     newGame();
   }
 }
 
 // FUNCTION TO RENDER SVG WHEN A WRONG GUESS HAS BEEN DONE
-let bodyParts = ['scaffold', 'head', 'body', 'arms', 'legs'];
+let i = 0;
 function renderSVG() {
-  document.querySelector('figure').classList.add(bodyParts[0]);
-  bodyParts.shift();
-  console.log(bodyParts);
+  let bodyParts = ['scaffold', 'head', 'body', 'arms', 'legs'];
+  document.querySelector('figure').classList.add(bodyParts[i]);
+  i++;
 }
 
 // FUNCTION TO DISPLAY GAME OVER OVERLAY IF USER FAILED TO GUESS THE WORD
@@ -106,19 +128,19 @@ document.querySelector('a').addEventListener('click', () => {
 
 // FUNCTION TO RENDER NEW WORD IF THE PREVIOUS WORD IS GUESSED CORRECTLY
 function newGame() {
-  infoContainer.innerHTML = 'Next round!';
+  infoContainer.textContent = 'You win! Next round!';
 
   setTimeout(() => {
+    i = 0; // RESET INDEX FOR ADDING CLASSES ON SVG
+    isWaiting = false; // FLIP BOOLEAN TO ENABLE TYPING AGAIN
     wrongGuesses = 5;
     correctLetters = [];
     wrongLetters = [];
     generateRandomWord();
     generateUnderscores(chosenWord);
-    bodyParts = ['scaffold', 'head', 'body', 'arms', 'legs'];
-    document
-      .querySelector('figure')
-      .classList.remove('scaffold', 'head', 'body', 'arms', 'legs');
     wrongWordContainer.textContent = '';
-    infoContainer.innerHTML = 'Take a guess!';
+    infoContainer.textContent = 'Take a guess!';
+    document.querySelector('figure').className = ''; // RESET ADDED CLASSES ON SVG
+    document.getElementById('guesses').textContent = `${wrongGuesses}`;
   }, 2000);
 }
